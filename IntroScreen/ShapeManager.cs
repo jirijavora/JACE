@@ -1,18 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 
-namespace JACE {
+namespace JACE.IntroScreen {
     public class ShapeManager {
         private static readonly string[] textureNames = { "Shape1", "Shape2", "Shape3", "Shape4" };
 
         private Texture2D[] textures = new Texture2D[textureNames.Length];
         private LinkedList<ShapeObject> shapes = new LinkedList<ShapeObject>();
-
-        private KeyboardState previousKeyboardState;
 
         private Random random = new Random();
 
@@ -23,17 +20,15 @@ namespace JACE {
             }
         }
 
-        public void Update (GameTime gameTime, GraphicsDevice graphicsDevice) {
-            KeyboardState currentKeyboardState = Keyboard.GetState();
-
-            if (currentKeyboardState.IsKeyDown(Keys.Space) && !previousKeyboardState.IsKeyDown(Keys.Space)) {
-                shapes.AddLast(new ShapeObject(textures[random.Next(textureNames.Length)], graphicsDevice));
+        public void Update (GameTime gameTime, InputState input) {
+            if (input.secondaryAction) {
+                shapes.AddLast(new ShapeObject(textures[random.Next(textureNames.Length)]));
             }
 
             LinkedListNode<ShapeObject> currentShape = shapes.First;
 
             while (currentShape != null) {
-                bool updateResult = currentShape.Value.Update(gameTime, graphicsDevice);
+                bool updateResult = currentShape.Value.Update(gameTime);
 
                 LinkedListNode<ShapeObject> lastShape = currentShape;
                 currentShape = currentShape.Next;
@@ -43,8 +38,6 @@ namespace JACE {
                 }
 
             }
-
-            previousKeyboardState = currentKeyboardState;
         }
 
         public void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {

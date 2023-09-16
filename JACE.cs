@@ -7,9 +7,13 @@ namespace JACE {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private GameplayInstruction gameplayInstruction;
-        private TitleText titleText;
-        private ShapeManager shapeManager;
+        private InputManager inputManager;
+
+        private Screen activeScreen;
+        private Screen newScreen;
+        bool newActiveScreen = false;
+
+        private Viewport viewport;
 
         public JACE () {
             _graphics = new GraphicsDeviceManager(this);
@@ -22,9 +26,12 @@ namespace JACE {
         protected override void Initialize () {
             // TODO: Add your initialization logic here
 
-            shapeManager = new ShapeManager();
-            gameplayInstruction = new GameplayInstruction();
-            titleText = new TitleText();
+            inputManager = new InputManager();
+
+            activeScreen = new IntroScreen.IntroScreen();
+            activeScreen.Initialize();
+
+            viewport = GraphicsDevice.Viewport;
 
             base.Initialize();
         }
@@ -33,34 +40,41 @@ namespace JACE {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            shapeManager.LoadContent(Content);
-            gameplayInstruction.LoadContent(Content);
-            titleText.LoadContent(Content);
+            ViewportHelper.Update(GraphicsDevice.Viewport);
+
+            activeScreen.LoadContent(Content);
+
+        }
+
+        void prepareNewActiveScreen (Screen newScreen) {
+            this.newActiveScreen = true;
+            this.newScreen = newScreen;
+        }
+
+        void changeActiveScreen () {
+            newScreen.Initialize();
+            newScreen.LoadContent(Content);
+            newActiveScreen = false;
+            activeScreen = newScreen;
         }
 
         protected override void Update (GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            shapeManager.Update(gameTime, GraphicsDevice);
-            gameplayInstruction.Update(gameTime);
-            titleText.Update(gameTime);
+            if (newActiveScreen) {
+                changeActiveScreen();
+            }
+
+            inputManager.Update();
+
+            activeScreen.Update(prepareNewActiveScreen, gameTime, inputManager.Input);
 
             base.Update(gameTime);
         }
 
         protected override void Draw (GameTime gameTime) {
-            GraphicsDevice.Clear(Color.White);
-
-            // TODO: Add your drawing code here
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
-            shapeManager.Draw(gameTime, _spriteBatch, GraphicsDevice);
-            gameplayInstruction.Draw(gameTime, _spriteBatch, GraphicsDevice);
-            titleText.Draw(gameTime, _spriteBatch, GraphicsDevice);
-
-            _spriteBatch.End();
+            activeScreen.Draw(gameTime, GraphicsDevice, _spriteBatch);
 
             base.Draw(gameTime);
         }

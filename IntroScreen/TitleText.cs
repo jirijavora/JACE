@@ -2,14 +2,14 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace JACE {
+namespace JACE.IntroScreen {
     public class TitleText {
         private SpriteFont titleFont;
         private SpriteFont subtitleFont;
         private Texture2D cursorTexture;
 
-        private const string titleString = "JACE";
-        private const string subtitleString = "Just Another Console Experience";
+        private string titleString;
+        private string subtitleString;
 
         private const float renderStartHeight = 1f / 4f;
         private const float subtitlePaddingPx = 10;
@@ -20,9 +20,14 @@ namespace JACE {
         private const double cursorBlinkTime = 1 / cursorBlinkFrequency;
         private const double cursorBlinkOnTime = cursorBlinkTime * cursorBlinkDutyCycle;
 
-        private Color titleColor = Color.DarkSlateGray;
-        private Color subtitleColor = Color.LightSlateGray;
+        private Color titleColor = JACEColors.MainColor;
+        private Color subtitleColor = JACEColors.SecondaryColor;
         private double cursorBlinkAnimationTimer = 0;
+
+        public TitleText (string title, string subtitle) {
+            this.titleString = title;
+            this.subtitleString = subtitle;
+        }
 
         public void LoadContent (ContentManager content) {
             titleFont = content.Load<SpriteFont>("MinimalXXL");
@@ -37,7 +42,7 @@ namespace JACE {
             Vector2 titleSize = titleFont.MeasureString(titleString);
             Vector2 subtitleSize = subtitleFont.MeasureString(subtitleString);
 
-            float titleY = graphicsDevice.Viewport.Y + (renderStartHeight * graphicsDevice.Viewport.Height);
+            float titleY = graphicsDevice.Viewport.Y + renderStartHeight * graphicsDevice.Viewport.Height;
             float titleX = graphicsDevice.Viewport.X + (graphicsDevice.Viewport.Width - titleSize.X) / 2f;
 
             float subtitleY = titleY + titleSize.Y + subtitlePaddingPx;
