@@ -2,81 +2,79 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace JACE {
-    public class JACE : Game {
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+namespace JACE; 
 
-        private InputManager inputManager;
+public class JACE : Game {
+    private GraphicsDeviceManager _graphics;
+    private SpriteBatch _spriteBatch;
 
-        private Screen activeScreen;
-        private Screen newScreen;
-        bool newActiveScreen = false;
+    private Screen activeScreen;
 
-        private Viewport viewport;
+    private InputManager inputManager;
+    private bool newActiveScreen;
+    private Screen newScreen;
 
-        public JACE () {
-            _graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+    private Viewport viewport;
 
-            Window.Title = "JACE";
-        }
+    public JACE() {
+        _graphics = new GraphicsDeviceManager(this);
+        Content.RootDirectory = "Content";
+        IsMouseVisible = true;
 
-        protected override void Initialize () {
-            // TODO: Add your initialization logic here
+        Window.Title = "JACE";
+    }
 
-            inputManager = new InputManager();
+    protected override void Initialize() {
+        // TODO: Add your initialization logic here
 
-            activeScreen = new IntroScreen.IntroScreen();
-            activeScreen.Initialize();
+        inputManager = new InputManager();
 
-            viewport = GraphicsDevice.Viewport;
+        activeScreen = new IntroScreen.IntroScreen();
+        activeScreen.Initialize();
 
-            base.Initialize();
-        }
+        viewport = GraphicsDevice.Viewport;
 
-        protected override void LoadContent () {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+        base.Initialize();
+    }
 
-            // TODO: use this.Content to load your game content here
-            ViewportHelper.Update(GraphicsDevice.Viewport);
+    protected override void LoadContent() {
+        _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            activeScreen.LoadContent(Content);
+        // TODO: use this.Content to load your game content here
+        ViewportHelper.Update(GraphicsDevice.Viewport);
 
-        }
+        activeScreen.LoadContent(Content);
+    }
 
-        void prepareNewActiveScreen (Screen newScreen) {
-            this.newActiveScreen = true;
-            this.newScreen = newScreen;
-        }
+    private void prepareNewActiveScreen(Screen newScreen) {
+        newActiveScreen = true;
+        this.newScreen = newScreen;
+    }
 
-        void changeActiveScreen () {
-            newScreen.Initialize();
-            newScreen.LoadContent(Content);
-            newActiveScreen = false;
-            activeScreen = newScreen;
-        }
+    private void changeActiveScreen() {
+        newScreen.Initialize();
+        newScreen.LoadContent(Content);
+        newActiveScreen = false;
+        activeScreen = newScreen;
+    }
 
-        protected override void Update (GameTime gameTime) {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+    protected override void Update(GameTime gameTime) {
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.Escape))
+            Exit();
 
-            if (newActiveScreen) {
-                changeActiveScreen();
-            }
+        if (newActiveScreen) changeActiveScreen();
 
-            inputManager.Update();
+        inputManager.Update();
 
-            activeScreen.Update(prepareNewActiveScreen, gameTime, inputManager.Input);
+        activeScreen.Update(prepareNewActiveScreen, gameTime, inputManager.Input);
 
-            base.Update(gameTime);
-        }
+        base.Update(gameTime);
+    }
 
-        protected override void Draw (GameTime gameTime) {
-            activeScreen.Draw(gameTime, GraphicsDevice, _spriteBatch);
+    protected override void Draw(GameTime gameTime) {
+        activeScreen.Draw(gameTime, GraphicsDevice, _spriteBatch);
 
-            base.Draw(gameTime);
-        }
+        base.Draw(gameTime);
     }
 }

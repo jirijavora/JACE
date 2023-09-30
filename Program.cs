@@ -1,3 +1,2 @@
-﻿
-using var game = new JACE.JACE();
+﻿using var game = new JACE.JACE();
 game.Run();
