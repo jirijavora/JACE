@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using System;
 
 namespace JACE.IntroScreen {
@@ -8,6 +9,8 @@ namespace JACE.IntroScreen {
         private GameplayInstruction gameplayInstruction;
         private TitleText titleText;
         private ShapeManager shapeManager;
+
+        private Song backgroundMusic;
 
         public override void Initialize () {
             shapeManager = new ShapeManager();
@@ -19,6 +22,10 @@ namespace JACE.IntroScreen {
             shapeManager.LoadContent(content);
             gameplayInstruction.LoadContent(content);
             titleText.LoadContent(content);
+
+            backgroundMusic = content.Load<Song>("music/magic_space.mp3");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(backgroundMusic);
         }
 
         public override void Update (Action<Screen> changeScreen, GameTime gameTime, InputState input) {

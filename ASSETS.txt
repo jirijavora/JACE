@@ -1,1 +1,2 @@
-﻿Content/Minimal5x7.ttf - Minimal5x7 font create by kheftel provided under the CC0 license (https://opengameart.org/content/minimalist-pixel-fonts)
+﻿Content/Minimal5x7.ttf - Minimal5x7 font provided under the CC0 license (https://opengameart.org/content/minimalist-pixel-fonts) by kheftel
+Content/music/"magic_space.mp3" - magic space ambiance soundtrack provided unter the CC0 licence (https://opengameart.org/content/magic-space) by CodeManu

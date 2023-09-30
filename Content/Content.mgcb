@@ -46,6 +46,12 @@
 /processorParam:TextureFormat=Compressed
 /build:MinimalXXL.spritefont
 
+#begin music/magic_space.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:music/magic_space.mp3
+
 #begin PlayerBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor
