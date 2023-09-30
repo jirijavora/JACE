@@ -1,2 +1,3 @@
 ﻿Content/Minimal5x7.ttf - Minimal5x7 font provided under the CC0 license (https://opengameart.org/content/minimalist-pixel-fonts) by kheftel
 Content/music/"magic_space.mp3" - magic space ambiance soundtrack provided unter the CC0 licence (https://opengameart.org/content/magic-space) by CodeManu
+Content/music/heartbeat.mp3 - tower projectile sound provided under the CC0 license (https://opengameart.org/content/heartbeat-single-sound) by Independent.nu

@@ -1,39 +1,61 @@
 ﻿using System;
+using JACE.IntroScreen;
+using JACE.StateManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace JACE.IntroScreen; 
+namespace JACE.GameLevel;
 
-public class WinScreen : Screen {
-    private GameplayInstruction gameplayInstruction;
-    private TitleText titleText;
+public class WinScreen : GameScreen {
+    private readonly GameplayInstruction gameplayInstruction;
+    private readonly TitleText titleText;
 
-    public override void Initialize() {
+    private ContentManager content;
+
+    public WinScreen() {
         gameplayInstruction =
-            new GameplayInstruction(new[] { "Press `ENTER` to play again" }, new[] { "To exit press `ESC`" });
+            new GameplayInstruction(new[] { "Press `ENTER` to play again", "Press `SPACE` to go to the main menu" },
+                new[] { "To exit press `ESC`" });
         titleText = new TitleText("You won", "");
+
+        TransitionOnTime = TimeSpan.FromSeconds(0.5f);
     }
 
-    public override void LoadContent(ContentManager content) {
+    public override void Activate() {
+        if (content == null)
+            content = new ContentManager(ScreenManager.Game.Services, "Content");
+
         gameplayInstruction.LoadContent(content);
         titleText.LoadContent(content);
     }
 
-    public override void Update(Action<Screen> changeScreen, GameTime gameTime, InputState input) {
+    public override void Unload() {
+        content.Unload();
+    }
+
+    public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen) {
         gameplayInstruction.Update(gameTime);
         titleText.Update(gameTime);
 
-        if (input.action) changeScreen(new GameLevel.GameLevel());
+        base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
     }
 
-    public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch) {
-        graphicsDevice.Clear(JACEColors.BackgroundColor);
+    public override void HandleInput(GameTime gameTime, InputState input) {
+        if (input.Action) ScreenManager.ReplaceScreen(this, new GameLevel());
+        else if (input.SecondaryAction) ScreenManager.ReplaceScreen(this, new IntroScreen.IntroScreen());
+    }
+
+    public override void Draw(GameTime gameTime) {
+        var graphicsDevice = ScreenManager.GraphicsDevice;
+        var spriteBatch = ScreenManager.SpriteBatch;
+
+        graphicsDevice.Clear(JaceColors.BackgroundColor);
 
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
         gameplayInstruction.Draw(gameTime, spriteBatch, graphicsDevice);
-        titleText.Draw(gameTime, spriteBatch, graphicsDevice);
+        titleText.Draw(gameTime, spriteBatch, graphicsDevice, TransitionAlpha);
 
         spriteBatch.End();
     }

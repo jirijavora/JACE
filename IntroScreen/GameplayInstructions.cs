@@ -2,19 +2,19 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace JACE.IntroScreen; 
+namespace JACE.IntroScreen;
 
 public class GameplayInstruction {
-    private const int bottomPaddingPx = 32;
-    private const int instructionPaddingPx = 8;
-    private const int importantSeperatorSizePx = 32;
-    private readonly Color color = JACEColors.TertiaryColor;
-    private SpriteFont font;
+    private const int BottomPaddingPx = 32;
+    private const int InstructionPaddingPx = 8;
+    private const int ImportantSeparatorSizePx = 32;
+    private readonly Color color = JaceColors.TertiaryColor;
 
-    private readonly Color importantColor = JACEColors.SecondaryColor;
+    private readonly Color importantColor = JaceColors.SecondaryColor;
 
     private readonly string[] importantInstructions;
     private readonly string[] instructions;
+    private SpriteFont font;
 
     public GameplayInstruction(string[] importantInstructions, string[] instructions) {
         this.importantInstructions = importantInstructions;
@@ -35,8 +35,8 @@ public class GameplayInstruction {
 
             var instructionY = graphicsDevice.Viewport.Y + graphicsDevice.Viewport.Height -
                                instructionSize.Y -
-                               bottomPaddingPx -
-                               (instructionSize.Y + instructionPaddingPx) * i;
+                               BottomPaddingPx -
+                               (instructionSize.Y + InstructionPaddingPx) * i;
             var instructionX = graphicsDevice.Viewport.X + (graphicsDevice.Viewport.Width - instructionSize.X) / 2f;
 
             spriteBatch.DrawString(font, instruction, new Vector2(instructionX, instructionY), color);
@@ -49,9 +49,9 @@ public class GameplayInstruction {
 
             var instructionY = graphicsDevice.Viewport.Y + graphicsDevice.Viewport.Height -
                                instructionSize.Y -
-                               bottomPaddingPx -
-                               importantSeperatorSizePx -
-                               (instructionSize.Y + instructionPaddingPx) * (instructions.Length + i);
+                               BottomPaddingPx -
+                               ImportantSeparatorSizePx -
+                               (instructionSize.Y + InstructionPaddingPx) * (instructions.Length + i);
             var instructionX = graphicsDevice.Viewport.X + (graphicsDevice.Viewport.Width - instructionSize.X) / 2f;
 
             spriteBatch.DrawString(font, instruction, new Vector2(instructionX, instructionY), importantColor);

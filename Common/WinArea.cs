@@ -2,57 +2,55 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace JACE.Common {
-    public class WinArea {
-        private SpriteFont font;
-        private Texture2D background;
-        private Vector2 position;
+namespace JACE.Common;
 
-        private readonly Color backgroundColor = JACEColors.WinColor;
-        private readonly Color textColor = JACEColors.BackgroundColor;
-        private const int backgroundPaddingPx = 6;
+public class WinArea {
+    private const int BackgroundPaddingPx = 6;
 
-        public string text {
-            get; private set;
-        }
+    private readonly Color backgroundColor = JaceColors.WinColor;
+    private readonly Color textColor = JaceColors.BackgroundColor;
+    private Texture2D background;
+    private SpriteFont font;
+    private Vector2 playerBackgroundSize;
 
-        Vector2 playerTextSize;
-        Vector2 playerBackgroundSize;
+    private Vector2 playerTextSize;
 
-        public BoundingRectangle boundingRectangle {
-            get; private set;
-        }
+    public WinArea(Vector2 initialPosition, string winText) {
+        Position = initialPosition;
+        Text = winText;
+    }
 
-        public WinArea (Vector2 initialPosition, string winText) {
-            position = initialPosition;
-            this.text = winText;
-        }
+    public Vector2 Position { get; }
 
-        public void LoadContent (ContentManager content) {
-            font = content.Load<SpriteFont>("Minimal");
-            background = content.Load<Texture2D>("PlayerBackground");
+    public string Text { get; }
 
-            measurePlayer();
-            updateBoundingRect();
-        }
+    public BoundingRectangle BoundingRectangle { get; private set; }
 
-        public void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {
-            Vector2 drawLeftTop = position - playerTextSize / 2;
-            Vector2 drawBackgroundLeftTop = position - playerBackgroundSize / 2;
+    public void LoadContent(ContentManager content) {
+        font = content.Load<SpriteFont>("Minimal");
+        background = content.Load<Texture2D>("Blank");
 
-            spriteBatch.Draw(background, drawBackgroundLeftTop, null, backgroundColor, 0, Vector2.Zero, playerBackgroundSize, SpriteEffects.None, 0);
-            spriteBatch.DrawString(font, text, drawLeftTop, textColor);
+        MeasurePlayer();
+        UpdateBoundingRect();
+    }
 
-            //spriteBatch.Draw(playerBackground, new Vector2(boundingRectangle.X, boundingRectangle.Y), null, Color.Red, 0, Vector2.Zero, new Vector2(boundingRectangle.Width, boundingRectangle.Height), SpriteEffects.None, 0);
-        }
+    public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {
+        var drawLeftTop = Position - playerTextSize / 2;
+        var drawBackgroundLeftTop = Position - playerBackgroundSize / 2;
 
-        private void measurePlayer () {
-            playerTextSize = font.MeasureString(text);
-            playerBackgroundSize = playerTextSize + new Vector2(backgroundPaddingPx * 2, backgroundPaddingPx * 2);
-        }
+        spriteBatch.Draw(background, drawBackgroundLeftTop, null, backgroundColor, 0, Vector2.Zero,
+            playerBackgroundSize, SpriteEffects.None, 0);
+        spriteBatch.DrawString(font, Text, drawLeftTop, textColor);
 
-        private void updateBoundingRect () {
-            boundingRectangle = new BoundingRectangle((position - playerBackgroundSize / 2), playerBackgroundSize);
-        }
+        //spriteBatch.Draw(playerBackground, new Vector2(boundingRectangle.X, boundingRectangle.Y), null, Color.Red, 0, Vector2.Zero, new Vector2(boundingRectangle.Width, boundingRectangle.Height), SpriteEffects.None, 0);
+    }
+
+    private void MeasurePlayer() {
+        playerTextSize = font.MeasureString(Text);
+        playerBackgroundSize = playerTextSize + new Vector2(BackgroundPaddingPx * 2, BackgroundPaddingPx * 2);
+    }
+
+    private void UpdateBoundingRect() {
+        BoundingRectangle = new BoundingRectangle(Position - playerBackgroundSize / 2, playerBackgroundSize);
     }
 }

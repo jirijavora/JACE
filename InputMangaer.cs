@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace JACE; 
+namespace JACE;
 
 public class InputState {
-    public bool action;
-    public Vector2 direction;
-    public bool secondaryAction;
+    public bool Action;
+    public Vector2 Direction;
+    public bool SecondaryAction;
 }
 
 public class InputManager {
@@ -15,43 +15,36 @@ public class InputManager {
 
     public InputState Input { get; } = new();
 
-    private bool keyPressed(Keys key) {
+    private bool KeyPressed(Keys key) {
         return previousState.IsKeyUp(key) && currentState.IsKeyDown(key);
     }
 
-    private bool isKeyDown(Keys key) {
+    private bool IsKeyDown(Keys key) {
         return currentState.IsKeyDown(key);
     }
 
-    private void updateDirection() {
+    private void UpdateDirection() {
         var direction = new Vector2(0, 0);
 
-        if (isKeyDown(Keys.Up) || isKeyDown(Keys.W)) direction += new Vector2(0, -1);
-        if (isKeyDown(Keys.Down) || isKeyDown(Keys.S)) direction += new Vector2(0, 1);
-        if (isKeyDown(Keys.Left) || isKeyDown(Keys.A)) direction += new Vector2(-1, 0);
-        if (isKeyDown(Keys.Right) || isKeyDown(Keys.D)) direction += new Vector2(1, 0);
+        if (IsKeyDown(Keys.Up) || IsKeyDown(Keys.W)) direction += new Vector2(0, -1);
+        if (IsKeyDown(Keys.Down) || IsKeyDown(Keys.S)) direction += new Vector2(0, 1);
+        if (IsKeyDown(Keys.Left) || IsKeyDown(Keys.A)) direction += new Vector2(-1, 0);
+        if (IsKeyDown(Keys.Right) || IsKeyDown(Keys.D)) direction += new Vector2(1, 0);
 
         /* Use `LengthSquared` instead of `Length` for small perf optimization
-         * (avoid unnecessery computation of square root, since we are interested only if it's larger than 1) */
+         * (avoid unnecessary computation of square root, since we are interested only if it's larger than 1) */
         if (direction.LengthSquared() > 1) direction.Normalize();
 
-        Input.direction = direction;
+        Input.Direction = direction;
     }
 
     public void Update() {
         previousState = currentState;
         currentState = Keyboard.GetState();
 
-        updateDirection();
+        UpdateDirection();
 
-        if (keyPressed(Keys.Enter))
-            Input.action = true;
-        else
-            Input.action = false;
-
-        if (keyPressed(Keys.Space))
-            Input.secondaryAction = true;
-        else
-            Input.secondaryAction = false;
+        Input.Action = KeyPressed(Keys.Enter);
+        Input.SecondaryAction = KeyPressed(Keys.Space);
     }
 }

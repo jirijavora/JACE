@@ -1,56 +1,59 @@
-﻿using System;
+﻿using JACE.StateManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Media;
 
-namespace JACE.IntroScreen; 
+namespace JACE.IntroScreen;
 
-public class IntroScreen : Screen {
-    private const float MEDIA_VOLUME_RAMP_UP_TIME = 12;
-    private const float MEDIA_VOLUME_MAX = 0.4f;
+public class IntroScreen : GameScreen {
+    private const float MediaVolumeRampUpTime = 12;
+    private const float MediaVolumeMax = 0.4f;
+    private readonly GameplayInstruction gameplayInstruction;
+    private readonly ShapeManager shapeManager;
+    private readonly TitleText titleText;
 
-    private Song backgroundMusic;
-    private GameplayInstruction gameplayInstruction;
-    private float mediaVolume;
-    private ShapeManager shapeManager;
-    private TitleText titleText;
 
-    public override void Initialize() {
+    private ContentManager content;
+
+    public IntroScreen() {
         shapeManager = new ShapeManager();
         gameplayInstruction = new GameplayInstruction(new[] { "Press `ENTER` to play" },
             new[] { "Press `SPACE` to do \"something...\"", "To exit press `ESC`" });
         titleText = new TitleText("JACE", "Just Another Console Experience");
-
-        mediaVolume = 0f;
     }
 
-    public override void LoadContent(ContentManager content) {
+    public override void Activate() {
+        if (content == null)
+            content = new ContentManager(ScreenManager.Game.Services, "Content");
+
         shapeManager.LoadContent(content);
         gameplayInstruction.LoadContent(content);
         titleText.LoadContent(content);
-
-        backgroundMusic = content.Load<Song>("music/magic_space");
-        MediaPlayer.IsRepeating = true;
-        MediaPlayer.Play(backgroundMusic);
-        MediaPlayer.Volume = mediaVolume;
     }
 
-    public override void Update(Action<Screen> changeScreen, GameTime gameTime, InputState input) {
-        shapeManager.Update(gameTime, input);
+    public override void Unload() {
+        content.Unload();
+    }
+
+    public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen) {
+        shapeManager.Update(gameTime);
         gameplayInstruction.Update(gameTime);
         titleText.Update(gameTime);
 
-        mediaVolume += (float)gameTime.ElapsedGameTime.TotalSeconds / (MEDIA_VOLUME_RAMP_UP_TIME / MEDIA_VOLUME_MAX);
-        if (mediaVolume > MEDIA_VOLUME_MAX) mediaVolume = MEDIA_VOLUME_MAX;
-
-        if (input.action) changeScreen(new GameLevel.GameLevel());
+        ScreenManager.MediaVolume +=
+            (float)gameTime.ElapsedGameTime.TotalSeconds / (MediaVolumeRampUpTime / MediaVolumeMax);
+        if (ScreenManager.MediaVolume > MediaVolumeMax) ScreenManager.MediaVolume = MediaVolumeMax;
     }
 
-    public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch) {
-        MediaPlayer.Volume = mediaVolume;
+    public override void HandleInput(GameTime gameTime, InputState input) {
+        shapeManager.HandleInput(gameTime, input);
 
-        graphicsDevice.Clear(JACEColors.BackgroundColor);
+        if (input.Action) ScreenManager.ReplaceScreen(this, new GameLevel.GameLevel());
+    }
+
+    public override void Draw(GameTime gameTime) {
+        var graphicsDevice = ScreenManager.GraphicsDevice;
+        var spriteBatch = ScreenManager.SpriteBatch;
 
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 

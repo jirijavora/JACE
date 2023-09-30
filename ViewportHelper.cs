@@ -1,28 +1,28 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace JACE; 
+namespace JACE;
 
 public static class ViewportHelper {
-    public static int viewportX { get; private set; }
+    public static int ViewportX { get; private set; }
 
-    public static int viewportY { get; private set; }
+    public static int ViewportY { get; private set; }
 
-    public static int viewportWidth { get; private set; }
+    public static int ViewportWidth { get; private set; }
 
-    public static int viewportHeight { get; private set; }
+    public static int ViewportHeight { get; private set; }
 
-    public static int getXAsDimensionFraction(float dimensionFraction) {
-        return (int)(viewportWidth * dimensionFraction) + viewportX;
+    public static int GetXAsDimensionFraction(float dimensionFraction) {
+        return (int)(ViewportWidth * dimensionFraction) + ViewportX;
     }
 
-    public static int getYAsDimensionFraction(float dimensionFraction) {
-        return (int)(viewportHeight * dimensionFraction) + viewportY;
+    public static int GetYAsDimensionFraction(float dimensionFraction) {
+        return (int)(ViewportHeight * dimensionFraction) + ViewportY;
     }
 
     public static void Update(Viewport viewport) {
-        viewportX = viewport.X;
-        viewportY = viewport.Y;
-        viewportWidth = viewport.Width;
-        viewportHeight = viewport.Height;
+        ViewportX = viewport.X;
+        ViewportY = viewport.Y;
+        ViewportWidth = viewport.Width;
+        ViewportHeight = viewport.Height;
     }
 }

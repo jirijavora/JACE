@@ -1,22 +1,22 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace JACE.Common {
-    public class Ball {
-        private Vector2 direction;
-        private float speed;
+namespace JACE.Common;
 
-        public BoundingCircle boundingCircle { get; private set; }
+public class Ball {
+    private readonly Vector2 direction;
+    private readonly float speed;
 
-        public Ball (BoundingCircle boundingCircle, Vector2 direction, float speed) {
-            this.boundingCircle = boundingCircle;
-            this.direction = direction;
-            this.speed = speed;
-        }
+    public Ball(BoundingCircle boundingCircle, Vector2 direction, float speed) {
+        BoundingCircle = boundingCircle;
+        this.direction = direction;
+        this.speed = speed;
+    }
 
-        public BoundingCircle UpdatePosition (GameTime gameTime) {
-            boundingCircle.center += direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+    public BoundingCircle BoundingCircle { get; }
 
-            return boundingCircle;
-        }
+    public BoundingCircle UpdatePosition(GameTime gameTime) {
+        BoundingCircle.Center += direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        return BoundingCircle;
     }
 }

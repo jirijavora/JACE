@@ -1,78 +1,74 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
-namespace JACE.Common {
-    public class Tower {
-        private Vector2 position;
-        private Texture2D textureAtlas;
-        private Vector2 textureCenter;
+namespace JACE.Common;
 
-        private int singleTextureSize;
+public class Tower {
+    private const float SizeMultiplier = 2;
 
-        private const float SIZE_MULTIPLIER = 2;
+    private const float BallSpeed = 120;
+    private const float BallSize = 16;
 
-        private const float BALL_SPEED = 120;
-        private const float BALL_SIZE = 16;
+    private const double FireDelay = 2.5f;
 
-        private const double FIRE_DELAY = 2.5f;
-        private double fireCountdown = 0;
+    private readonly Action<Vector2, Vector2, float, float> addBall;
+    private readonly Vector2 position;
+    private int currentState;
+    private double fireCountdown;
 
-        private int stateCount;
-        private int currentState = 0;
+    private int singleTextureSize;
 
-        private Action<Vector2, Vector2, float, float> addBall;
+    private int stateCount;
+    private Texture2D textureAtlas;
+    private Vector2 textureCenter;
 
-        public BoundingCircle boundingCircle {
-            get; private set;
-        }
+    public Tower(Vector2 position, Action<Vector2, Vector2, float, float> addBall) {
+        this.position = position;
+        this.addBall = addBall;
+    }
 
-        public Tower (Vector2 position, Action<Vector2, Vector2, float, float> addBall) {
-            this.position = position;
-            this.addBall = addBall;
-        }
+    public BoundingCircle BoundingCircle { get; private set; }
 
-        public void LoadContent (ContentManager content) {
-            textureAtlas = content.Load<Texture2D>("tower/towerAtlas");
-            singleTextureSize = textureAtlas.Height;
+    public void LoadContent(ContentManager content) {
+        textureAtlas = content.Load<Texture2D>("tower/towerAtlas");
+        singleTextureSize = textureAtlas.Height;
 
-            textureCenter = new Vector2(singleTextureSize / 2, singleTextureSize / 2);
+        textureCenter = new Vector2(singleTextureSize / 2, singleTextureSize / 2);
 
-            stateCount = textureAtlas.Width / singleTextureSize;
-            boundingCircle = new BoundingCircle(position, (singleTextureSize / 2) * SIZE_MULTIPLIER);
-        }
+        stateCount = textureAtlas.Width / singleTextureSize;
+        BoundingCircle = new BoundingCircle(position, singleTextureSize / 2 * SizeMultiplier);
+    }
 
-        public void Update (GameTime gameTime, BoundingRectangle playerBoundingRectangle) {
-            fireCountdown += gameTime.ElapsedGameTime.TotalSeconds;
+    public void Update(GameTime gameTime, BoundingRectangle playerBoundingRectangle) {
+        fireCountdown += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (fireCountdown >= FIRE_DELAY) {
-                fireCountdown -= FIRE_DELAY;
+        if (fireCountdown >= FireDelay) {
+            fireCountdown -= FireDelay;
 
-                addBall(
-                    position,
-                    (playerBoundingRectangle.topLeftCorner + playerBoundingRectangle.size / 2) - position,
-                    BALL_SIZE,
-                    BALL_SPEED
-                );
-            }
-
-            currentState = stateCount - 1 - (int)((fireCountdown * stateCount) / FIRE_DELAY);
-        }
-
-        public void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {
-
-            spriteBatch.Draw(
-                textureAtlas,
+            addBall(
                 position,
-                new Rectangle(singleTextureSize * currentState, 0, singleTextureSize, singleTextureSize),
-                JACEColors.SecondaryColor,
-                0,
-                textureCenter,
-                SIZE_MULTIPLIER,
-                SpriteEffects.None,
-                0
-           );
+                playerBoundingRectangle.TopLeftCorner + playerBoundingRectangle.Size / 2 - position,
+                BallSize,
+                BallSpeed
+            );
         }
+
+        currentState = stateCount - 1 - (int)(fireCountdown * stateCount / FireDelay);
+    }
+
+    public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {
+        spriteBatch.Draw(
+            textureAtlas,
+            position,
+            new Rectangle(singleTextureSize * currentState, 0, singleTextureSize, singleTextureSize),
+            JaceColors.SecondaryColor,
+            0,
+            textureCenter,
+            SizeMultiplier,
+            SpriteEffects.None,
+            0
+        );
     }
 }

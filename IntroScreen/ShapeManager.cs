@@ -4,23 +4,21 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace JACE.IntroScreen; 
+namespace JACE.IntroScreen;
 
 public class ShapeManager {
-    private static readonly string[] textureNames = { "Shape1", "Shape2", "Shape3", "Shape4" };
+    private static readonly string[] TextureNames = { "Shape1", "Shape2", "Shape3", "Shape4" };
 
     private readonly Random random = new();
     private readonly LinkedList<ShapeObject> shapes = new();
 
-    private readonly Texture2D[] textures = new Texture2D[textureNames.Length];
+    private readonly Texture2D[] textures = new Texture2D[TextureNames.Length];
 
     public void LoadContent(ContentManager content) {
-        for (var i = 0; i < textureNames.Length; i++) textures[i] = content.Load<Texture2D>(textureNames[i]);
+        for (var i = 0; i < TextureNames.Length; i++) textures[i] = content.Load<Texture2D>(TextureNames[i]);
     }
 
-    public void Update(GameTime gameTime, InputState input) {
-        if (input.secondaryAction) shapes.AddLast(new ShapeObject(textures[random.Next(textureNames.Length)]));
-
+    public void Update(GameTime gameTime) {
         var currentShape = shapes.First;
 
         while (currentShape != null) {
@@ -31,6 +29,10 @@ public class ShapeManager {
 
             if (updateResult == false) shapes.Remove(lastShape);
         }
+    }
+
+    public void HandleInput(GameTime gameTime, InputState input) {
+        if (input.SecondaryAction) shapes.AddLast(new ShapeObject(textures[random.Next(TextureNames.Length)]));
     }
 
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {

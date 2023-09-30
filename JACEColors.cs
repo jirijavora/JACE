@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace JACE; 
+namespace JACE;
 
-public static class JACEColors {
+public static class JaceColors {
     public static readonly Color MainColor = Color.DarkSlateGray;
     public static readonly Color SecondaryColor = Color.LightSlateGray;
     public static readonly Color TertiaryColor = Color.LightGray;

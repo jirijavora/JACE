@@ -1,2 +1,4 @@
-﻿using var game = new JACE.JACE();
+﻿using JACE;
+
+using var game = new Jace();
 game.Run();
