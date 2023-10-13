@@ -12,6 +12,7 @@ namespace JACE.StateManagement;
 ///     appropriate, and automatically routes input to the topmost screen.
 /// </summary>
 public class ScreenManager : DrawableGameComponent {
+    public const float MaxMediaVolumeChangeStep = 0.03f;
     private readonly ContentManager content;
     private readonly InputManager inputManager = new();
     private readonly List<GameScreen> screens = new();

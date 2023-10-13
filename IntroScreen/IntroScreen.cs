@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JACE.Levels;
 using JACE.StateManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -49,7 +50,7 @@ public class IntroScreen : GameScreen {
     public override void HandleInput(GameTime gameTime, InputState input) {
         shapeManager.HandleInput(gameTime, input);
 
-        if (input.Action) ScreenManager.ReplaceScreen(this, new GameLevel.GameLevel());
+        if (input.Action) ScreenManager.ReplaceScreen(this, new Level1());
     }
 
     public override void Draw(GameTime gameTime) {

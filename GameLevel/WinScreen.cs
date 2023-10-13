@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JACE.IntroScreen;
+using JACE.Levels;
 using JACE.StateManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -44,7 +45,7 @@ public class WinScreen : GameScreen {
     }
 
     public override void HandleInput(GameTime gameTime, InputState input) {
-        if (input.Action) ScreenManager.ReplaceScreen(this, new GameLevel());
+        if (input.Action) ScreenManager.ReplaceScreen(this, new Level1());
         else if (input.SecondaryAction) ScreenManager.ReplaceScreen(this, new IntroScreen.IntroScreen());
     }
 
