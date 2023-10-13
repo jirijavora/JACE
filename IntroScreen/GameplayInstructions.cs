@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,11 +13,11 @@ public class GameplayInstruction {
 
     private readonly Color importantColor = JaceColors.SecondaryColor;
 
-    private readonly string[] importantInstructions;
-    private readonly string[] instructions;
+    private readonly List<string> importantInstructions;
+    private readonly List<string> instructions;
     private SpriteFont font;
 
-    public GameplayInstruction(string[] importantInstructions, string[] instructions) {
+    public GameplayInstruction(List<string> importantInstructions, List<string> instructions) {
         this.importantInstructions = importantInstructions;
         this.instructions = instructions;
     }
@@ -28,7 +29,7 @@ public class GameplayInstruction {
     public void Update(GameTime gameTime) { }
 
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {
-        for (var i = 0; i < instructions.Length; i++) {
+        for (var i = 0; i < instructions.Count; i++) {
             var instruction = instructions[i];
 
             var instructionSize = font.MeasureString(instruction);
@@ -42,7 +43,7 @@ public class GameplayInstruction {
             spriteBatch.DrawString(font, instruction, new Vector2(instructionX, instructionY), color);
         }
 
-        for (var i = 0; i < importantInstructions.Length; i++) {
+        for (var i = 0; i < importantInstructions.Count; i++) {
             var instruction = importantInstructions[i];
 
             var instructionSize = font.MeasureString(instruction);
@@ -51,7 +52,7 @@ public class GameplayInstruction {
                                instructionSize.Y -
                                BottomPaddingPx -
                                ImportantSeparatorSizePx -
-                               (instructionSize.Y + InstructionPaddingPx) * (instructions.Length + i);
+                               (instructionSize.Y + InstructionPaddingPx) * (instructions.Count + i);
             var instructionX = graphicsDevice.Viewport.X + (graphicsDevice.Viewport.Width - instructionSize.X) / 2f;
 
             spriteBatch.DrawString(font, instruction, new Vector2(instructionX, instructionY), importantColor);

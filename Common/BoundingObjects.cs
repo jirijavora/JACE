@@ -3,7 +3,12 @@ using Microsoft.Xna.Framework;
 
 namespace JACE.Common;
 
-public class BoundingRectangle {
+public abstract class BoundingObject {
+    public abstract bool IsColliding(BoundingRectangle r);
+    public abstract bool IsColliding(BoundingCircle c);
+}
+
+public class BoundingRectangle : BoundingObject {
     public BoundingRectangle(Vector2 topLeftCorner, Vector2 size) {
         TopLeftCorner = topLeftCorner;
         Size = size;
@@ -22,16 +27,16 @@ public class BoundingRectangle {
     public float Left { get; }
     public float Right { get; }
 
-    public bool IsColliding(BoundingRectangle b) {
+    public override bool IsColliding(BoundingRectangle b) {
         return CollisionHelper.Collides(this, b);
     }
 
-    public bool IsColliding(BoundingCircle c) {
+    public override bool IsColliding(BoundingCircle c) {
         return CollisionHelper.Collides(this, c);
     }
 }
 
-public class BoundingCircle {
+public class BoundingCircle : BoundingObject {
     public Vector2 Center;
     public float Radius;
 
@@ -40,18 +45,18 @@ public class BoundingCircle {
         Radius = radius;
     }
 
-    public bool IsColliding(BoundingCircle b) {
+    public override bool IsColliding(BoundingCircle b) {
         return CollisionHelper.Collides(this, b);
     }
 
-    public bool IsColliding(BoundingRectangle r) {
+    public override bool IsColliding(BoundingRectangle r) {
         return CollisionHelper.Collides(this, r);
     }
 }
 
 public static class CollisionHelper {
     public static bool Collides(BoundingCircle a, BoundingCircle b) {
-        return Math.Pow(a.Radius + b.Radius, 2) <= (a.Center - b.Center).LengthSquared();
+        return Math.Pow(a.Radius + b.Radius, 2) >= (a.Center - b.Center).LengthSquared();
     }
 
     public static bool Collides(BoundingRectangle a, BoundingRectangle b) {
@@ -68,6 +73,6 @@ public static class CollisionHelper {
     }
 
     public static bool Collides(BoundingCircle c, BoundingRectangle r) {
-        return Collides(c, r);
+        return Collides(r, c);
     }
 }

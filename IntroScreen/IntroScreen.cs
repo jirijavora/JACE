@@ -1,4 +1,5 @@
-﻿using JACE.StateManagement;
+﻿using System.Collections.Generic;
+using JACE.StateManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,8 +18,8 @@ public class IntroScreen : GameScreen {
 
     public IntroScreen() {
         shapeManager = new ShapeManager();
-        gameplayInstruction = new GameplayInstruction(new[] { "Press `ENTER` to play" },
-            new[] { "Press `SPACE` to do \"something...\"", "To exit press `ESC`" });
+        gameplayInstruction = new GameplayInstruction(new List<string> { "Press `ENTER` to play" },
+            new List<string> { "Press `SPACE` to do \"something...\"", "To exit press `ESC`" });
         titleText = new TitleText("JACE", "Just Another Console Experience");
     }
 

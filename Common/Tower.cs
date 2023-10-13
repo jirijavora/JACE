@@ -13,7 +13,7 @@ public class Tower {
 
     private const double FireDelay = 2.5f;
 
-    private readonly Action<Vector2, Vector2, float, float> addBall;
+    private readonly Action<Vector2, Vector2, float, float, BoundingObject> addBall;
     private readonly Vector2 position;
     private int currentState;
     private double fireCountdown;
@@ -24,7 +24,7 @@ public class Tower {
     private Texture2D textureAtlas;
     private Vector2 textureCenter;
 
-    public Tower(Vector2 position, Action<Vector2, Vector2, float, float> addBall) {
+    public Tower(Vector2 position, Action<Vector2, Vector2, float, float, BoundingObject> addBall) {
         this.position = position;
         this.addBall = addBall;
     }
@@ -51,7 +51,8 @@ public class Tower {
                 position,
                 playerBoundingRectangle.TopLeftCorner + playerBoundingRectangle.Size / 2 - position,
                 BallSize,
-                BallSpeed
+                BallSpeed,
+                BoundingCircle
             );
         }
 

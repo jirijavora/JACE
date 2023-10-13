@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JACE.IntroScreen;
 using JACE.StateManagement;
 using Microsoft.Xna.Framework;
@@ -15,8 +16,9 @@ public class RetryScreen : GameScreen {
 
     public RetryScreen() {
         gameplayInstruction =
-            new GameplayInstruction(new[] { "Press `ENTER` to try again", "Press `SPACE` to go to the main menu" },
-                new[] { "To exit press `ESC`" });
+            new GameplayInstruction(
+                new List<string> { "Press `ENTER` to try again", "Press `SPACE` to go to the main menu" },
+                new List<string> { "To exit press `ESC`" });
         titleText = new TitleText("You lost", "");
 
         TransitionOnTime = TimeSpan.FromSeconds(0.5f);

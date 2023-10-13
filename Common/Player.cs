@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -26,14 +27,15 @@ public class Player {
     private SpriteFont playerFont;
 
     private Vector2 playerTextSize;
-    private Vector2 position;
 
     public Player(Vector2 initialPosition, string playerName = "Player") {
-        position = initialPosition;
+        Position = initialPosition;
         PlayerName = playerName;
+
+        BoundingRectangle = CalculateBoundingRect(Position);
     }
 
-    public Vector2 Position => position;
+    public Vector2 Position { get; private set; }
 
     public string PlayerName { get; }
 
@@ -47,26 +49,25 @@ public class Player {
         MeasurePlayer();
     }
 
-    public void HandleInput(GameTime gameTime, InputState input) {
+    public void HandleInput(GameTime gameTime, InputState input, List<BoundingObject> impassableObjects) {
         var deltaT = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        position += deltaT * input.Direction * Speed;
+        var newPosition = Position + deltaT * input.Direction * Speed;
+        var newPositionBoundingRectangle = CalculateBoundingRect(newPosition);
 
-        if (position.X - playerBackgroundSize.X / 2 < ViewportHelper.ViewportX)
-            position.X = ViewportHelper.ViewportX + playerBackgroundSize.X / 2;
-        if (position.X + playerBackgroundSize.X / 2 > ViewportHelper.ViewportX + ViewportHelper.ViewportWidth)
-            position.X = ViewportHelper.ViewportX + ViewportHelper.ViewportWidth - playerBackgroundSize.X / 2;
-        if (position.Y - playerBackgroundSize.Y / 2 < ViewportHelper.ViewportY)
-            position.Y = ViewportHelper.ViewportY + playerBackgroundSize.Y / 2;
-        if (position.Y + playerBackgroundSize.Y / 2 > ViewportHelper.ViewportY + ViewportHelper.ViewportHeight)
-            position.Y = ViewportHelper.ViewportY + ViewportHelper.ViewportHeight - playerBackgroundSize.Y / 2;
 
-        UpdateBoundingRect();
+        if (impassableObjects.Exists(
+                impassableObject => impassableObject.IsColliding(newPositionBoundingRectangle)))
+            return;
+
+
+        Position = newPosition;
+        BoundingRectangle = newPositionBoundingRectangle;
     }
 
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {
-        var playerDrawLeftTop = position - playerTextSize / 2;
-        var playerDrawBackgroundLeftTop = position - playerBackgroundSize / 2;
+        var playerDrawLeftTop = Position - playerTextSize / 2;
+        var playerDrawBackgroundLeftTop = Position - playerBackgroundSize / 2;
 
         spriteBatch.Draw(playerBackground, playerDrawBackgroundLeftTop, null, playerBackgroundColor, 0, Vector2.Zero,
             playerBackgroundSize, SpriteEffects.None, 0);
@@ -97,7 +98,7 @@ public class Player {
         playerBackgroundSize = playerTextSize + new Vector2(BackgroundPaddingPx * 2, BackgroundPaddingPx * 2);
     }
 
-    private void UpdateBoundingRect() {
-        BoundingRectangle = new BoundingRectangle(position - playerBackgroundSize / 2, playerBackgroundSize);
+    private BoundingRectangle CalculateBoundingRect(Vector2 calcPosition) {
+        return new BoundingRectangle(calcPosition - playerBackgroundSize / 2, playerBackgroundSize);
     }
 }

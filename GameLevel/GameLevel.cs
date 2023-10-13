@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using JACE.Common;
 using JACE.StateManagement;
 using Microsoft.Xna.Framework;
@@ -8,22 +9,24 @@ using Microsoft.Xna.Framework.Graphics;
 namespace JACE.GameLevel;
 
 public class GameLevel : GameScreen {
-    private readonly KillerShapeManager killerShapeManager;
-    private readonly Player player;
-    private readonly Tower[] towers;
-    private readonly Wall[] walls;
-    private readonly WinArea winArea;
-
     private ContentManager content;
+    private List<BoundingObject> impassableObjects;
+    private KillerShapeManager killerShapeManager;
+    private Player player;
+    private List<Tower> towers;
+    private List<Wall> walls;
+    private WinArea winArea;
 
-    public GameLevel() {
-        killerShapeManager = new KillerShapeManager();
+
+    public override void Activate() {
+        killerShapeManager = new KillerShapeManager(ScreenManager.Game);
+
 
         player = new Player(new Vector2(ViewportHelper.GetXAsDimensionFraction(1f / 5f),
             ViewportHelper.GetYAsDimensionFraction(1f / 2f)));
 
 
-        towers = new Tower[] {
+        towers = new List<Tower> {
             new(
                 new Vector2(ViewportHelper.GetXAsDimensionFraction(2f / 3f),
                     ViewportHelper.GetYAsDimensionFraction(1f / 3f)), killerShapeManager.AddBall),
@@ -32,18 +35,19 @@ public class GameLevel : GameScreen {
                     ViewportHelper.GetYAsDimensionFraction(2f / 3f)), killerShapeManager.AddBall)
         };
 
-        //walls = new Wall[] {
-        //    new Wall(new Vector2(ViewportHelper.getXAsDimensionFraction(1f/3f), ViewportHelper.getYAsDimensionFraction(1f/5f)),
-        //             new Vector2(ViewportHelper.getXAsDimensionFraction(1f/3f) + 10, ViewportHelper.getYAsDimensionFraction(4f/5f)))
-        //};
-        walls = Array.Empty<Wall>();
+        walls = new List<Wall> {
+            new(
+                new Vector2(ViewportHelper.GetXAsDimensionFraction(1f / 3f),
+                    ViewportHelper.GetYAsDimensionFraction(1f / 5f)),
+                new Vector2(ViewportHelper.GetXAsDimensionFraction(1f / 3f) + 10,
+                    ViewportHelper.GetYAsDimensionFraction(4f / 5f)))
+        };
 
         winArea = new WinArea(
             new Vector2(ViewportHelper.GetXAsDimensionFraction(7f / 8f),
                 ViewportHelper.GetYAsDimensionFraction(1f / 2f)), "Reach me...");
-    }
 
-    public override void Activate() {
+
         if (content == null)
             content = new ContentManager(ScreenManager.Game.Services, "Content");
 
@@ -56,6 +60,10 @@ public class GameLevel : GameScreen {
         player.LoadContent(content);
         winArea.LoadContent(content);
         killerShapeManager.LoadContent(content);
+
+        impassableObjects = walls.Select(wall => wall.BoundingRectangle).Concat(
+            towers.Select(tower => tower.BoundingCircle).Cast<BoundingObject>()
+        ).ToList();
     }
 
     public override void Unload() {
@@ -66,7 +74,7 @@ public class GameLevel : GameScreen {
         foreach (var tower in towers)
             tower.Update(gameTime, player.BoundingRectangle);
 
-        killerShapeManager.Update(this, ScreenManager, gameTime, player.BoundingRectangle);
+        killerShapeManager.Update(this, ScreenManager, gameTime, player.BoundingRectangle, impassableObjects);
 
         //foreach (Wall wall in walls)
         //    wall.Update(gameTime);
@@ -80,7 +88,7 @@ public class GameLevel : GameScreen {
     }
 
     public override void HandleInput(GameTime gameTime, InputState input) {
-        player.HandleInput(gameTime, input);
+        player.HandleInput(gameTime, input, impassableObjects);
     }
 
     public override void Draw(GameTime gameTime) {
