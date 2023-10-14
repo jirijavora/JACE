@@ -9,6 +9,7 @@ public class Player {
     private const int BackgroundPaddingPx = 6;
     private const int CursorHeightOffsetPx = -4;
     private const int CursorHeightPx = 6;
+    private const int MovementCollisionRefinementSteps = 5;
 
     private const int Speed = 200;
 
@@ -55,10 +56,25 @@ public class Player {
         var newPosition = Position + deltaT * input.Direction * Speed;
         var newPositionBoundingRectangle = CalculateBoundingRect(newPosition);
 
-
+        // Check if not trying to go through a solid object
         if (impassableObjects.Exists(
-                impassableObject => impassableObject.IsColliding(newPositionBoundingRectangle)))
-            return;
+                impassableObject => impassableObject.IsColliding(newPositionBoundingRectangle))) {
+            // Find a not colliding distance to travel
+            var newPositionCandidate = Position;
+            var movementIncrement = deltaT * input.Direction * Speed;
+            for (var i = 0; i < MovementCollisionRefinementSteps; i++) {
+                movementIncrement /= 2;
+
+                var newPositionCandidateBoundingRectangle =
+                    CalculateBoundingRect(newPositionCandidate + movementIncrement);
+                if (!impassableObjects.Exists(
+                        impassableObject => impassableObject.IsColliding(newPositionCandidateBoundingRectangle)))
+                    newPositionCandidate += movementIncrement;
+            }
+
+            newPosition = newPositionCandidate;
+            newPositionBoundingRectangle = CalculateBoundingRect(newPosition);
+        }
 
 
         Position = newPosition;
