@@ -12,6 +12,11 @@ public class Wall {
         BoundingRectangle = new BoundingRectangle(topLeftCorner, bottomRightCorner - topLeftCorner);
     }
 
+    public Wall(Vector2 topLeftCorner, Vector2 bottomRightCorner, Color color) :
+        this(topLeftCorner, bottomRightCorner) {
+        this.color = color;
+    }
+
     public BoundingRectangle BoundingRectangle { get; }
 
     public void LoadContent(ContentManager content) {

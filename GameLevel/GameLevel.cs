@@ -9,9 +9,14 @@ using Microsoft.Xna.Framework.Graphics;
 namespace JACE.GameLevel;
 
 public class GameLevel : GameScreen {
+    protected const int LevelMargin = 20;
+
+    protected const int LevelSizeX = 640;
+    protected const int LevelSizeY = 480;
     protected ContentManager Content;
     protected List<BoundingObject> ImpassableObjects;
     protected KillerShapeManager KillerShapeManager;
+    protected LevelArea LevelArea;
     protected Player Player;
     protected List<Tower> Towers;
     protected List<Wall> Walls;
@@ -22,6 +27,8 @@ public class GameLevel : GameScreen {
         if (Content == null)
             Content = new ContentManager(ScreenManager.Game.Services, "Content");
 
+        LevelArea = new LevelArea(new Vector2(LevelSizeX, LevelSizeY));
+
         foreach (var tower in Towers)
             tower.LoadContent(Content);
 
@@ -31,10 +38,11 @@ public class GameLevel : GameScreen {
         Player.LoadContent(Content);
         WinArea.LoadContent(Content);
         KillerShapeManager.LoadContent(Content);
+        LevelArea.LoadContent(Content);
 
         ImpassableObjects = Walls.Select(wall => wall.BoundingRectangle).Concat(
             Towers.Select(tower => tower.BoundingCircle).Cast<BoundingObject>()
-        ).ToList();
+        ).Concat(LevelArea.GetImpassableObjects()).ToList();
     }
 
     public override void Unload() {
@@ -66,12 +74,32 @@ public class GameLevel : GameScreen {
         var graphicsDevice = ScreenManager.GraphicsDevice;
         var spriteBatch = ScreenManager.SpriteBatch;
 
-        spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        var levelXWithMargins = LevelSizeX + LevelMargin * 2;
+        var levelYWithMargins = LevelSizeY + LevelMargin * 2;
+
+        var scaleX = ViewportHelper.ViewportWidth / (float)levelXWithMargins;
+        var scaleY = ViewportHelper.ViewportHeight / (float)levelYWithMargins;
+
+        var smallerDimensionScale = MathHelper.Min(scaleX, scaleY);
+        var scaleMatrix = Matrix.CreateScale(smallerDimensionScale);
+
+        var translationX = LevelMargin + (scaleX > scaleY
+            ? (ViewportHelper.ViewportWidth / smallerDimensionScale - levelXWithMargins) / 2f
+            : 0);
+        var translationY = LevelMargin + (scaleY > scaleX
+            ? (ViewportHelper.ViewportHeight / smallerDimensionScale - levelYWithMargins) / 2f
+            : 0);
+        var translationMatrix =
+            Matrix.CreateTranslation(translationX, translationY, 0);
+
+        var transformMatrix = translationMatrix * scaleMatrix;
+
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: transformMatrix);
 
         foreach (var tower in Towers)
             tower.Draw(gameTime, spriteBatch, graphicsDevice);
 
-        KillerShapeManager.Draw(gameTime, spriteBatch, graphicsDevice);
+        KillerShapeManager.Draw(gameTime, spriteBatch, graphicsDevice, transformMatrix);
 
         foreach (var wall in Walls)
             wall.Draw(gameTime, spriteBatch, graphicsDevice);
@@ -79,6 +107,8 @@ public class GameLevel : GameScreen {
         Player.Draw(gameTime, spriteBatch, graphicsDevice);
 
         WinArea.Draw(gameTime, spriteBatch, graphicsDevice);
+
+        LevelArea.Draw(gameTime, spriteBatch, graphicsDevice);
 
         spriteBatch.End();
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,17 +13,23 @@ public class Tower {
     private const float BallSize = 16;
 
     private const double FireDelay = 2.5f;
+    private const float ShootSoundForward = 0.35f;
 
     private readonly Action<Vector2, Vector2, float, float, BoundingObject> addBall;
     private readonly Vector2 position;
     private int currentState;
     private double fireCountdown;
 
+    private bool playedSoundEffectFlag;
+
+    private SoundEffect shootSound;
+
     private int singleTextureSize;
 
     private int stateCount;
     private Texture2D textureAtlas;
     private Vector2 textureCenter;
+
 
     public Tower(Vector2 position, Action<Vector2, Vector2, float, float, BoundingObject> addBall) {
         this.position = position;
@@ -33,19 +40,28 @@ public class Tower {
 
     public void LoadContent(ContentManager content) {
         textureAtlas = content.Load<Texture2D>("tower/towerAtlas");
+        shootSound = content.Load<SoundEffect>("music/heartbeat");
+
         singleTextureSize = textureAtlas.Height;
 
-        textureCenter = new Vector2(singleTextureSize / 2, singleTextureSize / 2);
+        textureCenter = new Vector2(singleTextureSize / 2f, singleTextureSize / 2f);
 
         stateCount = textureAtlas.Width / singleTextureSize;
-        BoundingCircle = new BoundingCircle(position, singleTextureSize / 2 * SizeMultiplier);
+        BoundingCircle = new BoundingCircle(position, singleTextureSize / 2f * SizeMultiplier);
     }
 
     public void Update(GameTime gameTime, BoundingRectangle playerBoundingRectangle) {
         fireCountdown += gameTime.ElapsedGameTime.TotalSeconds;
 
+        if (fireCountdown >= FireDelay - ShootSoundForward && !playedSoundEffectFlag) {
+            shootSound.Play(0.16f, 0, 0);
+            playedSoundEffectFlag = true;
+        }
+
+
         if (fireCountdown >= FireDelay) {
             fireCountdown -= FireDelay;
+            playedSoundEffectFlag = false;
 
             addBall(
                 position,

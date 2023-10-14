@@ -3,7 +3,6 @@ using JACE.Common.ParticleSystem;
 using JACE.GameLevel;
 using JACE.StateManagement;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,7 +14,6 @@ public class KillerShapeManager {
 
     private readonly BallDestructionParticleSystem destructionParticles;
     private Texture2D ballTexture;
-    private SoundEffect shootSound;
     private Vector2 textureCenter;
     private float textureUnitSize;
 
@@ -25,7 +23,6 @@ public class KillerShapeManager {
 
     public void LoadContent(ContentManager content) {
         ballTexture = content.Load<Texture2D>("Shape2");
-        shootSound = content.Load<SoundEffect>("music/heartbeat");
 
         textureCenter = new Vector2(ballTexture.Width / 2, ballTexture.Height / 2);
         textureUnitSize = ballTexture.Width;
@@ -67,7 +64,8 @@ public class KillerShapeManager {
         destructionParticles.Update(gameTime, impassableObjects);
     }
 
-    public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice) {
+    public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice,
+        Matrix transformMatrix) {
         foreach (var ball in balls)
             spriteBatch.Draw(
                 ballTexture,
@@ -81,13 +79,12 @@ public class KillerShapeManager {
                 0
             );
 
-        destructionParticles.Draw(gameTime);
+        destructionParticles.Draw(gameTime, transformMatrix);
     }
 
     public void AddBall(Vector2 position, Vector2 direction, float size, float speed,
         BoundingObject originatingBoundingObject) {
         direction.Normalize();
         balls.AddLast(new Ball(new BoundingCircle(position, size), direction, speed, originatingBoundingObject));
-        shootSound.Play(0.3f, 0, 0);
     }
 }

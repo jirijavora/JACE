@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using JACE.Common;
-using JACE.GameLevel;
 using Microsoft.Xna.Framework;
 
 namespace JACE.Levels;
@@ -10,30 +9,21 @@ public class Level1 : GameLevel.GameLevel {
         KillerShapeManager = new KillerShapeManager(ScreenManager.Game);
 
 
-        Player = new Player(new Vector2(ViewportHelper.GetXAsDimensionFraction(1f / 5f),
-            ViewportHelper.GetYAsDimensionFraction(1f / 2f)));
+        Player = new Player(new Vector2(LevelSizeX / 5f, LevelSizeY / 2f));
 
 
         Towers = new List<Tower> {
-            new(
-                new Vector2(ViewportHelper.GetXAsDimensionFraction(2f / 3f),
-                    ViewportHelper.GetYAsDimensionFraction(1f / 3f)), KillerShapeManager.AddBall),
-            new(
-                new Vector2(ViewportHelper.GetXAsDimensionFraction(2f / 3f),
-                    ViewportHelper.GetYAsDimensionFraction(2f / 3f)), KillerShapeManager.AddBall)
+            new(new Vector2(2f / 3f * LevelSizeX, 1f / 3f * LevelSizeY), KillerShapeManager.AddBall),
+            new(new Vector2(2f / 3f * LevelSizeX, 2f / 3f * LevelSizeY), KillerShapeManager.AddBall)
         };
 
         Walls = new List<Wall> {
             new(
-                new Vector2(ViewportHelper.GetXAsDimensionFraction(1f / 3f),
-                    ViewportHelper.GetYAsDimensionFraction(1f / 5f)),
-                new Vector2(ViewportHelper.GetXAsDimensionFraction(1f / 3f) + 10,
-                    ViewportHelper.GetYAsDimensionFraction(4f / 5f)))
+                new Vector2(1f / 3f * LevelSizeX, 1f / 5f * LevelSizeY),
+                new Vector2(1f / 3f * LevelSizeX + 10, 4f / 5f * LevelSizeY))
         };
 
-        WinArea = new WinArea(
-            new Vector2(ViewportHelper.GetXAsDimensionFraction(7f / 8f),
-                ViewportHelper.GetYAsDimensionFraction(1f / 2f)), "Reach me...");
+        WinArea = new WinArea(new Vector2(7f / 8f * LevelSizeX, 1f / 2f * LevelSizeY), "Reach me...");
 
         base.Activate();
     }
@@ -41,7 +31,7 @@ public class Level1 : GameLevel.GameLevel {
     public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen) {
         if (Player.BoundingRectangle.IsColliding(WinArea.BoundingRectangle)) {
             ScreenManager.RemoveScreen(this);
-            ScreenManager.AddScreen(new WinScreen());
+            ScreenManager.AddScreen(new Level2());
         }
 
 

@@ -238,10 +238,10 @@ public abstract class ParticleSystem {
     ///     Overriden from DrawableGameComponent, Draw will use the static
     ///     SpriteBatch to render all of the active particles.
     /// </summary>
-    public void Draw(GameTime gameTime) {
+    public void Draw(GameTime gameTime, Matrix transformMatrixt) {
         // tell sprite batch to begin, using the spriteBlendMode specified in
         // initializeConstants
-        spriteBatch.Begin(blendState: BlendState.AlphaBlend);
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend, transformMatrix: transformMatrixt);
 
         foreach (var p in particles) {
             // skip inactive particles
