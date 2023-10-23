@@ -11,8 +11,8 @@ namespace JACE.GameLevel;
 public class GameLevel : GameScreen {
     protected const int LevelMargin = 20;
 
-    protected const int LevelSizeX = 640;
-    protected const int LevelSizeY = 480;
+    protected const int LevelSizeX = 800;
+    protected const int LevelSizeY = 600;
     protected ContentManager Content;
     protected List<BoundingObject> ImpassableObjects;
     protected KillerShapeManager KillerShapeManager;

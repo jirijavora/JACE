@@ -9,8 +9,8 @@ public class Jace : Game {
     protected const int MinimumWidth = 640;
     protected const int MinimumHeight = 480;
 
-    protected const int PreferredWidth = 800;
-    protected const int PreferredHeight = 600;
+    protected const int PreferredWidth = 1024;
+    protected const int PreferredHeight = 768;
 
 
     private readonly GraphicsDeviceManager graphics;

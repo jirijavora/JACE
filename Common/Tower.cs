@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace JACE.Common;
 
 public class Tower {
-    private const float SizeMultiplier = 2;
+    private const float SizeMultiplier = 2.5f;
 
     private const float BallSpeed = 120;
     private const float BallSize = 16;
@@ -47,7 +47,7 @@ public class Tower {
         textureCenter = new Vector2(singleTextureSize / 2f, singleTextureSize / 2f);
 
         stateCount = textureAtlas.Width / singleTextureSize;
-        BoundingCircle = new BoundingCircle(position, singleTextureSize / 2f * SizeMultiplier);
+        BoundingCircle = new BoundingCircle(position, singleTextureSize / 2f * SizeMultiplier * 0.9f);
     }
 
     public void Update(GameTime gameTime, BoundingRectangle playerBoundingRectangle) {
